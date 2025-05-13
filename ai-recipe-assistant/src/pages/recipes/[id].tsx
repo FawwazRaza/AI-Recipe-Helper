@@ -1,28 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import RecipeDetail from '../../components/recipe/RecipeDetail';
+import dynamic from 'next/dynamic';
 import type { Recipe } from '../../types';
+import useSWR from 'swr';
 
-const fetchRecipes = async (): Promise<Recipe[]> => {
-  const res = await fetch('/data/recipes.json');
-  return res.json();
-};
+const fetcher = (url: string) => fetch(url).then(res => res.json());
+
+const RecipeDetail = dynamic(() => import('../../components/recipe/RecipeDetail'), { loading: () => <div>Loading recipe...</div> });
 
 const RecipeDetailPage = () => {
   const router = useRouter();
   const { id } = router.query;
-  const [recipe, setRecipe] = useState<Recipe | null>(null);
-
-  useEffect(() => {
-    if (!id) return;
-    fetchRecipes().then(recipes => {
-      const found = recipes.find((r: Recipe) => r.id === id);
-      setRecipe(found || null);
-    });
-  }, [id]);
-
+  const { data: recipes = [], isLoading } = useSWR<Recipe[]>('/data/recipes.json', fetcher, { revalidateOnFocus: false });
+  const recipe = recipes.find((r: Recipe) => r.id === id);
   if (!recipe) return <div>Loading...</div>;
-
   return <RecipeDetail {...recipe} />;
 };
 

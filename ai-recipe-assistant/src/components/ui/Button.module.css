@@ -40,6 +40,13 @@
   box-shadow: 0 4px 16px rgba(239,68,68,0.13);
 }
 
+.high-contrast .base {
+  background: var(--color-primary) !important;
+  color: var(--color-text) !important;
+  border: 2px solid var(--color-primary) !important;
+  box-shadow: 0 0 0 3px #FFD600 !important;
+}
+
 .base:focus-visible {
   outline: 2px solid var(--color-secondary);
   outline-offset: 2px;

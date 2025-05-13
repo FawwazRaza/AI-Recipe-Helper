@@ -7,6 +7,38 @@
   --color-muted: #9CA3AF; /* Muted Gray */
 }
 
+[data-theme='red'] {
+  --color-primary: #EF4444;
+  --color-secondary: #F59E42;
+}
+[data-theme='green'] {
+  --color-primary: #10B981;
+  --color-secondary: #3B2F2F;
+}
+[data-theme='blue'] {
+  --color-primary: #3B82F6;
+  --color-secondary: #6366F1;
+}
+
+[data-font='small'] {
+  font-size: 14px;
+}
+[data-font='medium'] {
+  font-size: 16px;
+}
+[data-font='large'] {
+  font-size: 18px;
+}
+
+.high-contrast {
+  --color-bg: #000 !important;
+  --color-text: #fff !important;
+  --color-primary: #FFD600 !important;
+  --color-secondary: #00E676 !important;
+  --color-muted: #fff !important;
+  outline: 3px solid #FFD600 !important;
+}
+
 body {
   font-family: 'Inter', 'Poppins', sans-serif;
   background: var(--color-bg);
@@ -14,18 +46,23 @@ body {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  transition: background 0.3s, color 0.3s;
+  font-size: 17px;
+  transition: background 0.3s, color 0.3s, font-size 0.2s, box-shadow 0.2s;
+  /* Subtle background pattern */
+  background-image: repeating-linear-gradient(135deg, #fafafa 0px, #fafafa 24px, #f3f4f6 24px, #f3f4f6 48px);
+  background-size: 48px 48px;
 }
 
 /* Use Tailwind's dark mode class */
 .dark body {
   background: #1F2937;
   color: #E5E7EB;
+  background-image: none;
 }
 
 /* Example: add transition for theme switching */
 html {
-  transition: background 0.3s, color 0.3s;
+  transition: background 0.3s, color 0.3s, font-size 0.2s;
 }
 
 ::placeholder {
@@ -34,16 +71,20 @@ html {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-secondary);
-  outline-offset: 2px;
+  outline: 2.5px solid var(--color-secondary);
+  outline-offset: 2.5px;
+  box-shadow: 0 0 0 3px #d1fae5;
+  border-radius: 6px;
 }
 
 img {
   max-width: 100%;
   display: block;
-  border-radius: 12px;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(16,185,129,0.07);
 }
 
 * {
   box-sizing: inherit;
+  scroll-behavior: smooth;
 } 

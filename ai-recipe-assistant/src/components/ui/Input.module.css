@@ -19,4 +19,10 @@
 .input::placeholder {
   color: var(--color-muted);
   opacity: 1;
+}
+
+.high-contrast .input {
+  background: #000 !important;
+  color: #fff !important;
+  border: 2px solid #FFD600 !important;
 } 

@@ -14,6 +14,12 @@ const Card: React.FC<CardProps> = ({ children, className = '' }) => (
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.4, ease: 'easeOut' }}
     whileHover={{ scale: 1.05, boxShadow: '0 8px 24px rgba(239, 68, 68, 0.15)' }}
+    style={{
+      background: 'var(--color-bg)',
+      color: 'var(--color-text)',
+      border: '1.5px solid var(--color-muted)',
+      outline: 'none',
+    }}
   >
     {children}
   </motion.div>

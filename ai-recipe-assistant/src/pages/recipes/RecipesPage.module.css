@@ -79,4 +79,17 @@
   color: var(--color-muted);
   font-size: 1.1rem;
   text-align: center;
+}
+
+.focusBadge {
+  display: inline-block;
+  background: #e6f9f2;
+  color: var(--color-secondary);
+  border-radius: 8px;
+  padding: 0.18rem 0.7rem;
+  font-size: 0.93rem;
+  font-weight: 600;
+  margin-right: 0.4rem;
+  margin-bottom: 0.1rem;
+  border: 1.5px solid var(--color-secondary);
 } 

@@ -1,18 +1,17 @@
 import React from 'react';
 import styles from './Button.module.css';
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline';
-  children: React.ReactNode;
-}
-
-const Button: React.FC<ButtonProps> = ({ variant = 'primary', children, ...props }) => (
+const Button = React.forwardRef(({ children, variant = 'primary', ...props }, ref) => (
   <button
+    ref={ref}
     className={`${styles.base} ${styles[variant]}`}
+    aria-disabled={props.disabled}
+    role="button"
+    tabIndex={0}
     {...props}
   >
     {children}
   </button>
-);
-
+));
+Button.displayName = 'Button';
 export default Button; 

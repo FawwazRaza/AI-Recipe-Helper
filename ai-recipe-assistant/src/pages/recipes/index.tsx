@@ -4,6 +4,8 @@ import RecipeFilter, { RecipeFilterOptions } from '../../components/recipe/Recip
 import Input from '../../components/ui/Input';
 import IngredientInput from '../../components/recipe/IngredientInput';
 import styles from './RecipesPage.module.css';
+import useSWR from 'swr';
+import Button from '../../components/ui/Button';
 
 interface Recipe {
   id: string;
@@ -25,13 +27,18 @@ interface RecipeMatch {
   missingIngredients: string[];
 }
 
-const fetchRecipes = async (): Promise<Recipe[]> => {
-  const res = await fetch('/data/recipes.json');
-  return res.json();
-};
+const fetcher = (url: string) => fetch(url).then(res => res.json());
+
+function loadNutritionSettings() {
+  try {
+    return JSON.parse(localStorage.getItem('nutritionSettings')) || {};
+  } catch {
+    return {};
+  }
+}
 
 const RecipesPage = () => {
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const { data: recipes = [], error, isLoading } = useSWR<Recipe[]>('/data/recipes.json', fetcher, { revalidateOnFocus: false });
   const [search, setSearch] = useState('');
   const [filtered, setFiltered] = useState<Recipe[]>([]);
   const [filterObj, setFilterObj] = useState<RecipeFilterOptions>({
@@ -46,10 +53,22 @@ const RecipesPage = () => {
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [ingredientMode, setIngredientMode] = useState(false);
   const [matchedRecipes, setMatchedRecipes] = useState<RecipeMatch[]>([]);
+  const [nutritionSettings, setNutritionSettings] = useState(loadNutritionSettings());
 
   useEffect(() => {
-    fetchRecipes().then(setRecipes);
+    setNutritionSettings(loadNutritionSettings());
   }, []);
+
+  useEffect(() => {
+    if (nutritionSettings && nutritionSettings.restrictions) {
+      const diet = [];
+      if (nutritionSettings.restrictions.vegetarian) diet.push('vegetarian');
+      if (nutritionSettings.restrictions.vegan) diet.push('vegan');
+      if (nutritionSettings.restrictions.glutenFree) diet.push('gluten-free');
+      // Optionally add dairyFree/nutFree if recipes support
+      setFilterObj(f => ({ ...f, diet }));
+    }
+  }, [nutritionSettings]);
 
   useEffect(() => {
     let result = [...recipes];
@@ -115,13 +134,20 @@ const RecipesPage = () => {
         }
       }
     }
+    // Filter out recipes that don't match restrictions
+    if (nutritionSettings && nutritionSettings.restrictions) {
+      if (nutritionSettings.restrictions.vegetarian) result = result.filter(r => r.diet.includes('vegetarian'));
+      if (nutritionSettings.restrictions.vegan) result = result.filter(r => r.diet.includes('vegan'));
+      if (nutritionSettings.restrictions.glutenFree) result = result.filter(r => r.diet.includes('gluten-free'));
+      // Optionally add dairyFree/nutFree if recipes support
+    }
     if (sort === 'time') {
       result.sort((a, b) => parseInt(a.cookingTime) - parseInt(b.cookingTime));
     } else if (sort === 'popularity') {
       result.sort((a, b) => b.popularity - a.popularity);
     }
     setFiltered(result);
-  }, [recipes, search, filterObj, sort, ingredients, ingredientMode]);
+  }, [recipes, search, filterObj, sort, ingredients, ingredientMode, nutritionSettings]);
 
   const handleFilterChange = (filters: RecipeFilterOptions) => {
     setFilterObj(filters);
@@ -137,61 +163,81 @@ const RecipesPage = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.sidebar}>
-        <RecipeFilter onFilterChange={handleFilterChange} onSortChange={setSort} />
-      </div>
-      <div className={styles.main}>
-        <h1 className={styles.heading}>All Recipes</h1>
-        <IngredientInput
-          ingredients={ingredients}
-          onChange={ings => { setIngredients(ings); setIngredientMode(false); }}
-          onSearch={handleIngredientSearch}
-        />
-        <Input
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          placeholder="Search recipes..."
-        />
-        <div className={styles.grid}>
-          {ingredientMode && ingredients.length > 0 && matchedRecipes.length > 0 ? (
-            matchedRecipes.filter(m => m.matchCount > 0).map(({ recipe, matchPercent, missingIngredients }) => (
-              <div key={recipe.id} className={styles.recipeCardWrapper}>
-                <RecipeCard
-                  image={recipe.image}
-                  name={recipe.name}
-                  cookingTime={recipe.cookingTime + ' min'}
-                  difficulty={recipe.difficulty}
-                />
-                <div className={styles.matchPercent}>
-                  {matchPercent}% match
-                </div>
-                {missingIngredients.length > 0 && (
-                  <div className={styles.missingIngredients}>
-                    Missing: {missingIngredients.join(', ')}
-                    <button
-                      className={styles.addMissingBtn}
-                      onClick={() => handleAddMissingToShopping(missingIngredients)}
-                    >
-                      Add missing to shopping list
-                    </button>
-                  </div>
-                )}
-              </div>
-            ))
-          ) : (
-            filtered.map(recipe => (
-              <RecipeCard
-                key={recipe.id}
-                image={recipe.image}
-                name={recipe.name}
-                cookingTime={recipe.cookingTime + ' min'}
-                difficulty={recipe.difficulty}
-              />
-            ))
-          )}
+    <div className={styles.wrapper}>
+      <h1 className={styles.heading}>All Recipes</h1>
+      <div className={styles.container}>
+        <div className={styles.sidebar}>
+          <RecipeFilter onFilterChange={handleFilterChange} onSortChange={setSort} />
         </div>
-        {filtered.length === 0 && <p className={styles.empty}>No recipes found.</p>}
+        <div className={styles.main}>
+          <IngredientInput
+            ingredients={ingredients}
+            onChange={ings => { setIngredients(ings); setIngredientMode(false); }}
+            onSearch={handleIngredientSearch}
+          />
+          <Input
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search recipes..."
+          />
+          <div className={styles.recipeList} aria-live="polite">
+            {isLoading && <div className={styles.spinner} aria-label="Loading recipes..." role="status" />}
+            {error && <div className={styles.error} role="alert">Failed to load recipes. Please try again later.</div>}
+            {!isLoading && !error && filtered.length === 0 && <p className={styles.empty}>No recipes found.</p>}
+            <div className={styles.grid}>
+              {ingredientMode && ingredients.length > 0 && matchedRecipes.length > 0 ? (
+                matchedRecipes.filter(m => m.matchCount > 0).map(({ recipe, matchPercent, missingIngredients }) => (
+                  <div key={recipe.id} className={styles.recipeCardWrapper}>
+                    <RecipeCard
+                      image={recipe.image}
+                      name={recipe.name}
+                      cookingTime={recipe.cookingTime + ' min'}
+                      difficulty={recipe.difficulty}
+                    />
+                    <div className={styles.matchPercent}>
+                      {matchPercent}% match
+                    </div>
+                    {missingIngredients.length > 0 && (
+                      <div className={styles.missingIngredients}>
+                        Missing: {missingIngredients.join(', ')}
+                        <button
+                          className={styles.addMissingBtn}
+                          onClick={() => handleAddMissingToShopping(missingIngredients)}
+                        >
+                          Add missing to shopping list
+                        </button>
+                      </div>
+                    )}
+                    {/* Focus badges */}
+                    <div style={{ marginTop: 4 }}>
+                      {nutritionSettings?.focus?.highProtein && recipe.nutrition?.toLowerCase().includes('protein') && <span className={styles.focusBadge}>High Protein</span>}
+                      {nutritionSettings?.focus?.lowSugar && recipe.nutrition?.toLowerCase().includes('sugar') && <span className={styles.focusBadge}>Low Sugar</span>}
+                      {nutritionSettings?.focus?.highFiber && recipe.nutrition?.toLowerCase().includes('fiber') && <span className={styles.focusBadge}>High Fiber</span>}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                filtered.map(recipe => (
+                  <div key={recipe.id} className={styles.recipeCardWrapper}>
+                    <RecipeCard
+                      image={recipe.image}
+                      name={recipe.name}
+                      cookingTime={recipe.cookingTime + ' min'}
+                      difficulty={recipe.difficulty}
+                    />
+                    {/* Focus badges */}
+                    <div style={{ marginTop: 4 }}>
+                      {nutritionSettings?.focus?.highProtein && recipe.nutrition?.toLowerCase().includes('protein') && <span className={styles.focusBadge}>High Protein</span>}
+                      {nutritionSettings?.focus?.lowSugar && recipe.nutrition?.toLowerCase().includes('sugar') && <span className={styles.focusBadge}>Low Sugar</span>}
+                      {nutritionSettings?.focus?.highFiber && recipe.nutrition?.toLowerCase().includes('fiber') && <span className={styles.focusBadge}>High Fiber</span>}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            {filtered.length === 0 && <p className={styles.empty}>No recipes found.</p>}
+          </div>
+        </div>
       </div>
     </div>
   );

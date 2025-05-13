@@ -14,7 +14,10 @@ const FeaturedRecipes = () => (
     <div className={styles.grid}>
       {featured.map((recipe, idx) => (
         <div key={idx} className={styles.card}>
-          <Image src={recipe.image} alt={recipe.name} width={400} height={250} className={styles.image} />
+          <Image src={recipe.image} alt={recipe.name} width={400} height={250} className={styles.image} 
+            loading={idx === 0 ? undefined : 'lazy'}
+            priority={idx === 0}
+          />
           <h3 className={styles.name}>{recipe.name}</h3>
         </div>
       ))}
