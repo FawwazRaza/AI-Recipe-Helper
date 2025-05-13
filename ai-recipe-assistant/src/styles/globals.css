@@ -1,0 +1,49 @@
+/* Color palette */
+:root {
+  --color-primary: #EF4444; /* Tomato Red */
+  --color-secondary: #10B981; /* Leaf Green */
+  --color-bg: #FAFAFA; /* Off-White */
+  --color-text: #3B2F2F; /* Dark Brown */
+  --color-muted: #9CA3AF; /* Muted Gray */
+}
+
+body {
+  font-family: 'Inter', 'Poppins', sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* Use Tailwind's dark mode class */
+.dark body {
+  background: #1F2937;
+  color: #E5E7EB;
+}
+
+/* Example: add transition for theme switching */
+html {
+  transition: background 0.3s, color 0.3s;
+}
+
+::placeholder {
+  color: var(--color-muted);
+  opacity: 1;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+  border-radius: 12px;
+}
+
+* {
+  box-sizing: inherit;
+} 

@@ -1,0 +1,22 @@
+.input {
+  border: 1.5px solid var(--color-muted);
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  width: 100%;
+  font-size: 1rem;
+  color: var(--color-text);
+  background: #fff;
+  transition: border 0.18s, box-shadow 0.18s;
+  margin-bottom: 0.7rem;
+}
+
+.input:focus {
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 2px rgba(16,185,129,0.13);
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--color-muted);
+  opacity: 1;
+} 
