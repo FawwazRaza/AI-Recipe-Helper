@@ -3,8 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import styles from './Navbar.module.css';
 import { useTheme } from '../../context/ThemeContext';
-import type { Theme } from '../../context/ThemeContext';
-
+import type { Theme, FontSize } from '../../context/ThemeContext';
 const navLinks = [
   { href: '/', label: 'Home', aria: 'Home' },
   { href: '/recipes', label: 'Recipes', aria: 'Recipes' },
