@@ -85,7 +85,7 @@ const Navbar = () => {
         </select>
         <select
           value={fontSize}
-          onChange={e => setFontSize(e.target.value)}
+          onChange={e => setFontSize(e.target.value as FontSize)}
           aria-label="Select font size"
           className={styles.fontSelect}
         >
