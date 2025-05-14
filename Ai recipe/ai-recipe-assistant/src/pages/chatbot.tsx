@@ -81,7 +81,6 @@ const SUPPORTED_LANGUAGES = [
 ];
 
 const Modal = dynamic(() => import('../components/ui/Modal'), { loading: () => <div>Loading...</div> });
-const Button = dynamic(() => import('../components/ui/Button'), { loading: () => <button>Loading...</button> });
 
 const ChatbotPage = () => {
   const { recipes, setRecipes } = useRecipeContext();
