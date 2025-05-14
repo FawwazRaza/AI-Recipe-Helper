@@ -38,9 +38,11 @@ const IngredientInput: React.FC<IngredientInputProps> = ({ ingredients, onChange
       <div className="flex gap-2 mb-2">
         <Input
           value={input}
-          onChange={e => setInput(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value)}
           placeholder="Add an ingredient..."
-          onKeyDown={e => e.key === 'Enter' && addIngredient(input)}
+          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+            if (e.key === 'Enter') addIngredient(input);
+          }}
         />
         <Button onClick={() => addIngredient(input)}>Add</Button>
       </div>
