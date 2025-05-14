@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './ShoppingListModal.module.css';
 
-function downloadPDF(list) {
+function downloadPDF(list: string[]) {
   // Simple PDF export using window.print (for demo)
   const win = window.open('', '', 'width=600,height=800');
   win.document.write('<html><head><title>Shopping List</title></head><body>');
