@@ -73,7 +73,7 @@ const Navbar = () => {
         </button>
         <select
           value={theme}
-          onChange={e => setTheme(e.target.value)}
+          onChange={e => setTheme(e.target.value as Theme)}
           aria-label="Select color theme"
           className={styles.themeSelect}
         >
