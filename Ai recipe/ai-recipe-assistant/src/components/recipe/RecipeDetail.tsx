@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import styles from './RecipeDetail.module.css';
-
-interface Ingredient {
-  name: string;
-  quantity: string;
-}
+import type { Ingredient } from '../../types';
 
 interface RecipeDetailProps {
   image: string;
@@ -19,7 +15,15 @@ interface RecipeDetailProps {
 }
 
 // Simple nutrition database (per 100g or per unit)
-const NUTRITION_DB = {
+const NUTRITION_DB: Record<string, {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber: number;
+  sugar: number;
+  allergens: string[];
+}> = {
   'egg': { calories: 70, protein: 6, carbs: 1, fat: 5, fiber: 0, sugar: 1, allergens: ['egg'] },
   'spaghetti': { calories: 158, protein: 6, carbs: 31, fat: 1, fiber: 2, sugar: 1, allergens: ['gluten'] },
   'pancetta': { calories: 500, protein: 37, carbs: 1, fat: 39, fiber: 0, sugar: 0, allergens: [] },
