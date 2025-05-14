@@ -1,9 +1,22 @@
 import React, { useState } from 'react';
 import styles from './ShoppingListModal.module.css';
+import type { Ingredient } from '../../types';
 
-function downloadPDF(list: string[]) {
+// Define the type for a shopping list item
+interface ShoppingListItem {
+  name: string;
+  quantity?: string[];
+}
+
+// Define the type for the shopping list object
+export type ShoppingList = {
+  [category: string]: ShoppingListItem[];
+};
+
+function downloadPDF(list: ShoppingList) {
   // Simple PDF export using window.print (for demo)
   const win = window.open('', '', 'width=600,height=800');
+  if (!win) return;
   win.document.write('<html><head><title>Shopping List</title></head><body>');
   win.document.write('<h2>Shopping List</h2>');
   Object.keys(list).forEach(cat => {
@@ -18,7 +31,7 @@ function downloadPDF(list: string[]) {
   win.print();
 }
 
-function mailList(list) {
+function mailList(list: ShoppingList) {
   let body = 'Shopping List:\n';
   Object.keys(list).forEach(cat => {
     body += `\n${cat}:\n`;
@@ -31,14 +44,20 @@ function mailList(list) {
 
 const CATEGORY_ORDER = ['Produce', 'Dairy', 'Protein', 'Grains', 'Pantry', 'Other'];
 
-const ShoppingListModal = ({ open, onClose, shoppingList }) => {
-  const [checked, setChecked] = useState({});
+interface ShoppingListModalProps {
+  open: boolean;
+  onClose: () => void;
+  shoppingList: ShoppingList;
+}
+
+const ShoppingListModal: React.FC<ShoppingListModalProps> = ({ open, onClose, shoppingList }) => {
+  const [checked, setChecked] = useState<{ [name: string]: boolean }>({});
   const [toast, setToast] = useState('');
   const [loading, setLoading] = useState(false);
 
   if (!open) return null;
 
-  const handleCheck = name => {
+  const handleCheck = (name: string) => {
     setChecked(c => ({ ...c, [name]: !c[name] }));
   };
 
