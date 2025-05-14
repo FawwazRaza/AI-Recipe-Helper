@@ -1,7 +1,11 @@
 // TypeScript type declarations for browser SpeechRecognition
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-type SpeechRecognition = typeof window extends { webkitSpeechRecognition: infer T } ? T : never;
+
+declare global {
+  interface Window {
+    SpeechRecognition: typeof SpeechRecognition;
+    webkitSpeechRecognition: typeof SpeechRecognition;
+  }
+}
 
 import { useEffect, useRef, useState } from 'react';
 
@@ -11,8 +15,8 @@ export function useSpeechRecognition(onResult: (transcript: string) => void) {
 
   useEffect(() => {
     const SpeechRecognition =
-      (window as Window & typeof globalThis).SpeechRecognition ||
-      (window as Window & typeof globalThis).webkitSpeechRecognition;
+      window.SpeechRecognition ||
+      window.webkitSpeechRecognition;
     if (!SpeechRecognition) return;
     const recognition = new SpeechRecognition();
     recognition.continuous = true;
