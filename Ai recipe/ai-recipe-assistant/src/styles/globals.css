@@ -1,0 +1,166 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@600;700&display=swap');
+
+/* Color palette from style guide */
+:root {
+  --color-bg: #FAFAFA; /* Soft White */
+  --color-text: #23272F; /* Deep Charcoal */
+  --color-primary: #4F8CFF; /* Muted Blue */
+  --color-accent-green: #3DDC97; /* Fresh Green */
+  --color-accent-coral: #FF6B6B; /* Warm Coral */
+  --color-card-bg: #FFFFFF;
+  --color-muted: #9CA3AF;
+}
+
+body {
+  font-family: 'Inter', Arial, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  margin: 0;
+  padding: 0;
+  font-size: 17px;
+  box-sizing: border-box;
+  transition: background 0.3s, color 0.3s;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', Arial, sans-serif;
+  color: var(--color-text);
+  margin-top: 0;
+  margin-bottom: 0.5em;
+  font-weight: 700;
+}
+
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
+h5 { font-size: 1.1rem; }
+h6 { font-size: 1rem; }
+
+p, li, label, input, textarea, button {
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 1rem;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+a:hover, a:focus {
+  color: var(--color-accent-green);
+  text-decoration: underline;
+}
+
+/* Button styles */
+.button, button, input[type="submit"] {
+  font-family: 'Poppins', Arial, sans-serif;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75em 2em;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(79,140,255,0.08);
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+}
+.button:hover, button:hover, input[type="submit"]:hover {
+  background: var(--color-accent-green);
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 4px 16px rgba(61,220,151,0.12);
+}
+.button:active, button:active, input[type="submit"]:active {
+  background: var(--color-accent-coral);
+  transform: scale(0.98);
+}
+
+/* Card styles */
+.card {
+  background: var(--color-card-bg);
+  border-radius: 18px;
+  box-shadow: 0 2px 16px rgba(35,39,47,0.06);
+  padding: 24px;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.card:hover {
+  box-shadow: 0 6px 32px rgba(79,140,255,0.10);
+  transform: translateY(-4px) scale(1.01);
+}
+
+/* Input styles */
+input, textarea, select {
+  background: #fff;
+  color: var(--color-text);
+  border: 1.5px solid var(--color-muted);
+  border-radius: 8px;
+  padding: 0.75em 1em;
+  font-size: 1rem;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(79,140,255,0.10);
+  outline: none;
+}
+
+/* Utility spacing classes */
+.mt-8 { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
+.mt-32 { margin-top: 32px; }
+.mb-8 { margin-bottom: 8px; }
+.mb-16 { margin-bottom: 16px; }
+.mb-24 { margin-bottom: 24px; }
+.mb-32 { margin-bottom: 32px; }
+.p-8 { padding: 8px; }
+.p-16 { padding: 16px; }
+.p-24 { padding: 24px; }
+.p-32 { padding: 32px; }
+
+/* Responsive images */
+img {
+  max-width: 100%;
+  display: block;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(35,39,47,0.07);
+}
+
+/* Accessibility focus */
+:focus-visible {
+  outline: 2.5px solid var(--color-primary);
+  outline-offset: 2.5px;
+  box-shadow: 0 0 0 3px #d1fae5;
+  border-radius: 6px;
+}
+
+/* Box sizing and scroll */
+*, *::before, *::after {
+  box-sizing: inherit;
+  scroll-behavior: smooth;
+}
+
+html {
+  box-sizing: border-box;
+  font-size: 100%;
+  transition: background 0.3s, color 0.3s, font-size 0.2s;
+}
+
+/* Use Tailwind's dark mode class */
+.dark body {
+  background: #1F2937;
+  color: #E5E7EB;
+  background-image: none;
+}
+
+/* Example: add transition for theme switching */
+html {
+  transition: background 0.3s, color 0.3s, font-size 0.2s;
+}
+
+::placeholder {
+  color: var(--color-muted);
+  opacity: 1;
+} 

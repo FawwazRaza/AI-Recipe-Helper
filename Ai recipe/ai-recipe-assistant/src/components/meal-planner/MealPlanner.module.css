@@ -1,0 +1,311 @@
+.wrapper {
+  max-width: 1200px;
+  margin: 2.5rem auto 2rem auto;
+  padding: 1.5rem;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 16px rgba(16,185,129,0.07);
+  position: relative;
+}
+
+.heading {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.btn {
+  background: var(--color-secondary);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 0.6rem 1.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+}
+.btn:hover, .btn:focus {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 120px repeat(7, 1fr);
+  border-radius: 12px;
+  overflow: auto;
+  background: #f7fafc;
+  margin-bottom: 2.2rem;
+}
+
+.daysHeader {
+  display: contents;
+}
+
+.dayHeader {
+  background: #f3f4f6;
+  font-weight: 600;
+  color: var(--color-secondary);
+  text-align: center;
+  padding: 0.7rem 0.2rem;
+  border-bottom: 2px solid #e5e7eb;
+  font-size: 1.08rem;
+}
+
+.corner {
+  background: #f3f4f6;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.mealRow {
+  display: contents;
+}
+
+.mealHeader {
+  background: #f3f4f6;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-align: right;
+  padding: 0.7rem 0.5rem;
+  border-right: 2px solid #e5e7eb;
+  font-size: 1.08rem;
+}
+
+.cell {
+  min-height: 90px;
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  margin: 0.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow 0.18s, border 0.18s;
+  position: relative;
+  cursor: pointer;
+}
+.cell:hover, .cell:focus {
+  box-shadow: 0 2px 12px rgba(16,185,129,0.10);
+  border-color: var(--color-secondary);
+}
+
+.emptyCell {
+  color: var(--color-muted);
+  font-size: 0.97rem;
+  text-align: center;
+}
+
+.recipeCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: grab;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 1px 6px rgba(16,185,129,0.07);
+  padding: 0.3rem 0.5rem 0.5rem 0.5rem;
+  transition: box-shadow 0.18s, transform 0.13s;
+}
+.recipeCard:active {
+  transform: scale(0.97);
+}
+
+.recipeImg {
+  width: 60px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 0.2rem;
+}
+
+.recipeName {
+  font-size: 0.98rem;
+  font-weight: 500;
+  color: var(--color-text);
+  text-align: center;
+}
+
+.recipeListSection {
+  margin-top: 2.5rem;
+}
+
+.subheading {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-secondary);
+  margin-bottom: 1rem;
+}
+
+.recipeList {
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.preview {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%);
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 32px rgba(16,185,129,0.18);
+  padding: 2rem 2.5rem 1.5rem 2.5rem;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  animation: fadeIn 0.2s;
+}
+
+.previewImg {
+  width: 180px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+
+.previewName {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, -70%); }
+  to { opacity: 1; transform: translate(-50%, -60%); }
+}
+
+.search {
+  border: 1.5px solid var(--color-muted);
+  border-radius: 8px;
+  padding: 0.55rem 1rem;
+  font-size: 1rem;
+  color: var(--color-text);
+  background: #fff;
+  transition: border 0.18s;
+  margin-bottom: 1.1rem;
+  width: 100%;
+  max-width: 350px;
+  display: block;
+}
+
+.search:focus {
+  border-color: var(--color-secondary);
+  outline: none;
+}
+
+.removeArea {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  background: #fff0f0;
+  color: var(--color-primary);
+  border: 2px dashed var(--color-primary);
+  border-radius: 12px 12px 0 0;
+  padding: 1.1rem 2.5rem 1.2rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  box-shadow: 0 -2px 16px rgba(239,68,68,0.08);
+  z-index: 200;
+  transition: background 0.18s, color 0.18s, border 0.18s;
+  pointer-events: all;
+}
+
+.removeAreaActive {
+  composes: removeArea;
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-secondary);
+}
+
+.cellDragOver {
+  box-shadow: 0 0 0 3px var(--color-secondary);
+  border-color: var(--color-secondary) !important;
+}
+
+.templateSelect {
+  border: 1.5px solid var(--color-muted);
+  border-radius: 8px;
+  padding: 0.55rem 1rem;
+  font-size: 1rem;
+  color: var(--color-text);
+  background: #fff;
+  margin-right: 1rem;
+  margin-bottom: 0.5rem;
+  transition: border 0.18s;
+}
+
+.templateSelect:focus {
+  border-color: var(--color-secondary);
+  outline: none;
+}
+
+.activeTemplateLabel {
+  color: var(--color-secondary);
+  font-weight: 600;
+  margin-right: 1.2rem;
+  font-size: 1.05rem;
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 0.3rem 0.8rem;
+  display: inline-block;
+}
+
+.userTemplateList {
+  margin: 1.5rem 0 1.2rem 0;
+  background: #f7fafc;
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+}
+.userTemplateUl {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+.userTemplateItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #fff;
+  border-radius: 8px;
+  padding: 0.3rem 0.7rem;
+  box-shadow: 0 1px 4px rgba(16,185,129,0.07);
+}
+.userTemplateName {
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-right: 0.5rem;
+}
+.userTemplateInput {
+  border: 1.5px solid var(--color-muted);
+  border-radius: 8px;
+  padding: 0.4rem 0.8rem;
+  font-size: 1rem;
+  color: var(--color-text);
+  background: #fff;
+  margin-right: 0.5rem;
+  transition: border 0.18s;
+}
+.userTemplateInput:focus {
+  border-color: var(--color-secondary);
+  outline: none;
+} 
