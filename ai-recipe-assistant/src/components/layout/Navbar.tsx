@@ -1,8 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './Navbar.module.css';
 import { useTheme } from '../../context/ThemeContext';
+
+const navLinks = [
+  { href: '/', label: 'Home', aria: 'Home' },
+  { href: '/recipes', label: 'Recipes', aria: 'Recipes' },
+  { href: '/meal-planner', label: 'Meal Planner', aria: 'Meal Planner' },
+  { href: '/nutrition', label: 'Nutrition', aria: 'Nutrition' },
+  { href: '/chatbot', label: 'Chatbot', aria: 'Chatbot' },
+];
 
 const Navbar = () => {
   const {
@@ -16,18 +24,42 @@ const Navbar = () => {
     setHighContrast,
   } = useTheme();
 
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Close menu on navigation
+  const handleNavClick = () => setMenuOpen(false);
+
   return (
     <nav className={styles.navbar} aria-label="Main navigation" role="navigation">
       <div className={styles.logoArea}>
         <Image src="/images/logo.svg" alt="AI Recipe Assistant Logo" className={styles.logo} width={32} height={32} loading="eager" />
         <span className={styles.brand}>AI Recipe Assistant</span>
       </div>
-      <div className={styles.links}>
-        <Link href="/" className={styles.link} aria-label="Home">Home</Link>
-        <Link href="/recipes" className={styles.link} aria-label="Recipes">Recipes</Link>
-        <Link href="/meal-planner" className={styles.link} aria-label="Meal Planner">Meal Planner</Link>
-        <Link href="/nutrition" className={styles.link} aria-label="Nutrition">Nutrition</Link>
-        <Link href="/chatbot" className={styles.link} aria-label="Chatbot">Chatbot</Link>
+      <button
+        className={`${styles.hamburger} ${menuOpen ? styles.open : ''}`}
+        aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+        aria-expanded={menuOpen}
+        aria-controls="main-menu"
+        onClick={() => setMenuOpen(!menuOpen)}
+      >
+        <span className={styles.bar}></span>
+        <span className={styles.bar}></span>
+        <span className={styles.bar}></span>
+      </button>
+      <div className={`${styles.links} ${menuOpen ? styles.mobileMenuOpen : ''}`} id="main-menu" role="menu">
+        {navLinks.map(link => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className={styles.link}
+            aria-label={link.aria}
+            tabIndex={menuOpen || typeof window === 'undefined' || window.innerWidth > 700 ? 0 : -1}
+            onClick={handleNavClick}
+            role="menuitem"
+          >
+            {link.label}
+          </Link>
+        ))}
       </div>
       <div className={styles.actions}>
         <input type="text" placeholder="Search recipes..." className={styles.search} aria-label="Search recipes" />
@@ -69,6 +101,8 @@ const Navbar = () => {
           {highContrast ? '🟡' : '⬛'}
         </button>
       </div>
+      {/* Overlay for mobile menu */}
+      {menuOpen && <div className={styles.overlay} onClick={() => setMenuOpen(false)} aria-hidden="true"></div>}
     </nav>
   );
 };

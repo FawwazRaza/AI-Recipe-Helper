@@ -18,39 +18,42 @@ const DEFAULT_SETTINGS = {
   focus: { highProtein: false, lowSugar: false, highFiber: false }
 };
 
-function loadGoals() {
+function loadGoals(): typeof DEFAULT_GOALS {
   try {
-    return JSON.parse(localStorage.getItem('nutritionGoals')) || DEFAULT_GOALS;
+    const stored = localStorage.getItem('nutritionGoals');
+    return stored ? JSON.parse(stored) : DEFAULT_GOALS;
   } catch {
     return DEFAULT_GOALS;
   }
 }
-function saveGoals(goals) {
+function saveGoals(goals: typeof DEFAULT_GOALS) {
   localStorage.setItem('nutritionGoals', JSON.stringify(goals));
 }
 
-function loadSettings() {
+function loadSettings(): typeof DEFAULT_SETTINGS {
   try {
-    return JSON.parse(localStorage.getItem('nutritionSettings')) || DEFAULT_SETTINGS;
+    const stored = localStorage.getItem('nutritionSettings');
+    return stored ? JSON.parse(stored) : DEFAULT_SETTINGS;
   } catch {
     return DEFAULT_SETTINGS;
   }
 }
-function saveSettings(settings) {
+function saveSettings(settings: typeof DEFAULT_SETTINGS) {
   localStorage.setItem('nutritionSettings', JSON.stringify(settings));
 }
 
 // Try to load real meal plan data from localStorage (if available)
-function loadMealPlan() {
+function loadMealPlan(): any {
   try {
-    return JSON.parse(localStorage.getItem('mealPlan')) || null;
+    const stored = localStorage.getItem('mealPlan');
+    return stored ? JSON.parse(stored) : null;
   } catch {
     return null;
   }
 }
 
 // Helper: parse nutrition string (e.g., "500 kcal, 20g protein, 60g carbs, 15g fat, 5g fiber, 8g sugar")
-function parseNutrition(nutrition) {
+function parseNutrition(nutrition: string): { calories: number; protein: number; carbs: number; fat: number; fiber: number; sugar: number } {
   const result = { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, sugar: 0 };
   if (!nutrition) return result;
   const cal = nutrition.match(/(\d+)\s*kcal/); if (cal) result.calories = parseInt(cal[1]);
@@ -62,7 +65,7 @@ function parseNutrition(nutrition) {
   return result;
 }
 
-function sumNutrients(meals) {
+function sumNutrients(meals: Record<string, { calories: number; protein: number; carbs: number; fat: number; fiber: number; sugar: number }>): { calories: number; protein: number; carbs: number; fat: number; fiber: number; sugar: number } {
   return Object.values(meals).reduce(
     (acc, m) => ({
       calories: acc.calories + (m.calories || 0),
@@ -77,16 +80,16 @@ function sumNutrients(meals) {
 }
 
 // Pie chart for macro distribution
-function MacroPieChart({ protein, carbs, fat }) {
+function MacroPieChart({ protein, carbs, fat }: { protein: number; carbs: number; fat: number }) {
   const total = protein + carbs + fat;
   const p = total ? (protein / total) * 100 : 0;
   const c = total ? (carbs / total) * 100 : 0;
   const f = total ? (fat / total) * 100 : 0;
   // Pie chart SVG (simple, 3 slices)
-  const angle = (v) => (v / 100) * 360;
-  const describeArc = (start, end) => {
+  const angle = (v: number) => (v / 100) * 360;
+  const describeArc = (start: number, end: number) => {
     const r = 50, cx = 60, cy = 60;
-    const rad = (deg) => (Math.PI / 180) * deg;
+    const rad = (deg: number) => (Math.PI / 180) * deg;
     const x1 = cx + r * Math.cos(rad(start - 90));
     const y1 = cy + r * Math.sin(rad(start - 90));
     const x2 = cx + r * Math.cos(rad(end - 90));
@@ -107,7 +110,7 @@ function MacroPieChart({ protein, carbs, fat }) {
 }
 
 // Trend line for calories/macros
-function TrendLine({ data, color, label }) {
+function TrendLine({ data, color, label }: { data: number[]; color: string; label: string }) {
   const max = Math.max(...data, 1);
   return (
     <svg width="220" height="60" viewBox="0 0 220 60">
@@ -125,24 +128,29 @@ function TrendLine({ data, color, label }) {
   );
 }
 
+interface Nutrients { calories: number; protein: number; carbs: number; fat: number; fiber: number; sugar: number }
+interface DayMeals { day: string; meals: Record<string, Nutrients> }
+
 const NutritionDashboard = () => {
   const [selectedDay, setSelectedDay] = useState(0);
-  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
-  const [mealPlan, setMealPlan] = useState(null);
+  const [settings, setSettings] = useState<typeof DEFAULT_SETTINGS>(DEFAULT_SETTINGS);
+  const [mealPlan, setMealPlan] = useState<any>(null);
   const [showGoalModal, setShowGoalModal] = useState(false);
-  const [draft, setDraft] = useState(settings);
+  const [draft, setDraft] = useState<typeof DEFAULT_SETTINGS>(settings);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     setSettings(loadSettings());
     setMealPlan(loadMealPlan());
   }, []);
 
-  const weekData = useMemo(() => {
+  const weekData: DayMeals[] = useMemo(() => {
     if (mealPlan && Array.isArray(mealPlan) && mealPlan.length === 7) {
-      return mealPlan.map(day => ({
+      return mealPlan.map((day: any) => ({
         day: day.day,
         meals: Object.fromEntries(
-          Object.entries(day.meals).map(([meal, recipe]) => [
+          Object.entries(day.meals).map(([meal, recipe]: [string, any]) => [
             meal,
             recipe && recipe.nutrition ? parseNutrition(recipe.nutrition) : { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, sugar: 0 }
           ])
@@ -161,9 +169,9 @@ const NutritionDashboard = () => {
     }
   }, [mealPlan]);
 
-  const weekSummary = useMemo(() => weekData.map(day => sumNutrients(day.meals)), [weekData]);
-  const totalWeek = useMemo(() => weekSummary.reduce(
-    (acc, d) => ({
+  const weekSummary: Nutrients[] = useMemo(() => weekData.map((day: DayMeals) => sumNutrients(day.meals)), [weekData]);
+  const totalWeek: Nutrients = useMemo(() => weekSummary.reduce(
+    (acc: Nutrients, d: Nutrients) => ({
       calories: acc.calories + d.calories,
       protein: acc.protein + d.protein,
       carbs: acc.carbs + d.carbs,
@@ -173,18 +181,20 @@ const NutritionDashboard = () => {
     }),
     { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, sugar: 0 }
   ), [weekSummary]);
-  const day = weekData[selectedDay];
-  const dayTotal = sumNutrients(day.meals);
+  const day: DayMeals = weekData[selectedDay];
+  const dayTotal: Nutrients = sumNutrients(day.meals);
 
   // Simple bar chart for weekly calories
-  const maxCal = Math.max(...weekSummary.map(d => d.calories), settings.goals.calories);
+  const maxCal = Math.max(...weekSummary.map((d: Nutrients) => d.calories), settings.goals.calories);
+
+  if (!mounted) return <div style={{textAlign:'center',marginTop:'3rem',fontSize:'1.2rem'}}>Loading...</div>;
 
   return (
     <div className={styles.wrapper}>
       <h1 className={styles.heading}>Nutrition Dashboard</h1>
-      {Object.values(settings.restrictions).some(Boolean) && (
+      {Object.entries(settings.restrictions as Record<string, boolean>).some(Boolean) && (
         <div style={{ marginBottom: 12 }}>
-          {Object.entries(settings.restrictions).map(([key, val]) => val && (
+          {Object.entries(settings.restrictions as Record<string, boolean>).map(([key, val]) => val && (
             <span key={key} className={styles.restrictionTag}>{key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}</span>
           ))}
         </div>
@@ -260,12 +270,12 @@ const NutritionDashboard = () => {
           {MEALS.map(meal => (
             <div key={meal} className={styles.breakdownCard}>
               <h4>{meal}</h4>
-              <div>Calories: {day.meals[meal].calories}</div>
-              <div>Protein: {day.meals[meal].protein}g</div>
-              <div>Carbs: {day.meals[meal].carbs}g</div>
-              <div>Fat: {day.meals[meal].fat}g</div>
-              <div>Fiber: {day.meals[meal].fiber}g</div>
-              <div>Sugar: {day.meals[meal].sugar}g</div>
+              <div>Calories: {(day.meals[meal] as Nutrients).calories}</div>
+              <div>Protein: {(day.meals[meal] as Nutrients).protein}g</div>
+              <div>Carbs: {(day.meals[meal] as Nutrients).carbs}g</div>
+              <div>Fat: {(day.meals[meal] as Nutrients).fat}g</div>
+              <div>Fiber: {(day.meals[meal] as Nutrients).fiber}g</div>
+              <div>Sugar: {(day.meals[meal] as Nutrients).sugar}g</div>
             </div>
           ))}
         </div>
@@ -313,8 +323,8 @@ const NutritionDashboard = () => {
                   className={styles.goalInput}
                   type="number"
                   min="0"
-                  value={draft.goals[key]}
-                  onChange={e => setDraft(d => ({ ...d, goals: { ...d.goals, [key]: parseInt(e.target.value) || 0 } }))}
+                  value={(draft.goals as Record<string, number>)[key]}
+                  onChange={e => setDraft(d => ({ ...d, goals: { ...(d.goals as Record<string, number>), [key]: parseInt(e.target.value) || 0 } }))}
                 />
                 <span className={styles.goalUnit}>{key === 'calories' ? 'kcal' : 'g'}</span>
               </div>

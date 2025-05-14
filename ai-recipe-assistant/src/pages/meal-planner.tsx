@@ -172,10 +172,12 @@ const MealPlanner = () => {
   const [editTemplateIdx, setEditTemplateIdx] = useState(null);
   const [editTemplateName, setEditTemplateName] = useState('');
   const [nutritionSettings, setNutritionSettings] = useState({});
+  const [mounted, setMounted] = useState(false);
 
   const { data: recipes = [] } = useSWR('/data/recipes.json', (url: string) => fetch(url).then(res => res.json()), { revalidateOnFocus: false });
 
   useEffect(() => {
+    setMounted(true);
     setUserTemplates(getUserTemplates());
     setPersistedShopping(loadShoppingList());
     setNutritionSettings(loadNutritionSettings());
@@ -355,6 +357,8 @@ const MealPlanner = () => {
 
   // Placeholder for future user account integration
   // (e.g., sync shopping list to user profile)
+
+  if (!mounted) return <div style={{textAlign:'center',marginTop:'3rem',fontSize:'1.2rem'}}>Loading...</div>;
 
   return (
     <div className={styles.wrapper}>
