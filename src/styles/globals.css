@@ -148,13 +148,6 @@ html {
   transition: background 0.3s, color 0.3s, font-size 0.2s;
 }
 
-/* Use Tailwind's dark mode class */
-.dark body {
-  background: #1F2937;
-  color: #E5E7EB;
-  background-image: none;
-}
-
 /* Example: add transition for theme switching */
 html {
   transition: background 0.3s, color 0.3s, font-size 0.2s;
