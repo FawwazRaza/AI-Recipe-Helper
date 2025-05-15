@@ -31,7 +31,7 @@ const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 function loadNutritionSettings() {
   try {
-    return JSON.parse(localStorage.getItem('nutritionSettings')) || {};
+    return JSON.parse(localStorage.getItem('nutritionSettings') || '{}');
   } catch {
     return {};
   }
@@ -61,7 +61,7 @@ const RecipesPage = () => {
 
   useEffect(() => {
     if (nutritionSettings && nutritionSettings.restrictions) {
-      const diet = [];
+      const diet: string[] = [];
       if (nutritionSettings.restrictions.vegetarian) diet.push('vegetarian');
       if (nutritionSettings.restrictions.vegan) diet.push('vegan');
       if (nutritionSettings.restrictions.glutenFree) diet.push('gluten-free');

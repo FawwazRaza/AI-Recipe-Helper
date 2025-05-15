@@ -5,6 +5,7 @@ import { useRecipeContext } from '../context/RecipeContext';
 import { marked } from 'marked';
 import Tesseract from 'tesseract.js';
 import Button from '../components/ui/Button';
+import type { Recipe, Ingredient } from '../types';
 
 // --- LLM API integration (Groq, OpenAI-compatible endpoint) ---
 const LLM_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
@@ -19,7 +20,8 @@ function getHeaders() {
   };
 }
 
-async function fetchLLM(messages, context) {
+type LLMMessage = { role: string; content: string };
+async function fetchLLM(messages: LLMMessage[], context: string) {
   // Groq format (OpenAI-compatible)
   const body = {
     model: 'llama3-8b-8192', // or another Groq-supported model
@@ -84,7 +86,7 @@ const Modal = dynamic(() => import('../components/ui/Modal'), { loading: () => <
 
 const ChatbotPage = () => {
   const { recipes, setRecipes } = useRecipeContext();
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<LLMMessage[]>([
     { role: 'assistant', content: 'Hi! I\'m your AI cooking assistant. How can I help you today?' }
   ]);
   const [input, setInput] = useState('');
@@ -93,27 +95,27 @@ const ChatbotPage = () => {
   const [context, setContext] = useState(''); // For meal plan/recipe context
   const [showImport, setShowImport] = useState(false);
   const [selectedRecipeId, setSelectedRecipeId] = useState('');
-  const inputRef = useRef(null);
-  const chatEndRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const chatEndRef = useRef<HTMLDivElement>(null);
   const [ocrText, setOcrText] = useState('');
   const [ocrLoading, setOcrLoading] = useState(false);
   const [ocrError, setOcrError] = useState('');
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [customRecipeModal, setCustomRecipeModal] = useState(false);
   const [customRecipe, setCustomRecipe] = useState({ name: '', ingredients: '', instructions: '', nutrition: '', diet: '' });
-  const [suggestedRecipes, setSuggestedRecipes] = useState([]);
+  const [suggestedRecipes, setSuggestedRecipes] = useState<Recipe[]>([]);
   const [listening, setListening] = useState(false);
   const [continuous, setContinuous] = useState(false);
   const [voiceLang, setVoiceLang] = useState('en-US');
   const [currentStep, setCurrentStep] = useState(0);
-  const recognitionRef = useRef(null);
+  const recognitionRef = useRef<any>(null);
   const [toast, setToast] = useState('');
 
   // Get selected recipe object
   const selectedRecipe = recipes.find(r => r.id === selectedRecipeId);
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (chatEndRef.current) chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   // Update context when recipe changes
@@ -129,7 +131,7 @@ const ChatbotPage = () => {
 
   // Keyboard accessibility
   useEffect(() => {
-    const handler = (e) => {
+    const handler = (e: KeyboardEvent) => {
       if (e.key === 'Enter' && document.activeElement === inputRef.current) {
         handleSend();
       }
@@ -166,7 +168,7 @@ const ChatbotPage = () => {
       recognition.continuous = continuous;
       recognition.interimResults = false;
       recognition.lang = voiceLang;
-      recognition.onresult = (event) => {
+      recognition.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript;
         handleVoiceCommand(transcript);
       };
@@ -181,19 +183,19 @@ const ChatbotPage = () => {
   }, [continuous, voiceLang]);
 
   function startListening() {
-    if (recognitionRef.current) {
+    if (recognitionRef.current && typeof recognitionRef.current.start === 'function') {
       setListening(true);
       recognitionRef.current.start();
     }
   }
   function stopListening() {
-    if (recognitionRef.current) {
+    if (recognitionRef.current && typeof recognitionRef.current.stop === 'function') {
       recognitionRef.current.stop();
       setListening(false);
     }
   }
 
-  function handleVoiceCommand(transcript) {
+  function handleVoiceCommand(transcript: string) {
     const text = transcript.toLowerCase();
     // Voice activation
     if (text.includes('hey chef')) {
@@ -270,7 +272,7 @@ const ChatbotPage = () => {
     setInput(transcript);
   }
 
-  function speak(text) {
+  function speak(text: string) {
     if ('speechSynthesis' in window) {
       const utter = new window.SpeechSynthesisUtterance(text);
       utter.lang = voiceLang;
@@ -297,9 +299,9 @@ const ChatbotPage = () => {
     }
   }
 
-  function handleQuickPrompt(prompt) {
+  function handleQuickPrompt(prompt: string) {
     setInput(prompt);
-    inputRef.current?.focus();
+    if (inputRef.current) inputRef.current.focus();
   }
 
   // --- Recipe Import Modal (URL/OCR placeholder) ---
@@ -307,7 +309,7 @@ const ChatbotPage = () => {
     setShowImport(true);
   }
 
-  async function handleOcrUpload(e) {
+  async function handleOcrUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     setOcrLoading(true);
@@ -326,9 +328,9 @@ const ChatbotPage = () => {
   }
 
   // Handle custom recipe modal
-  function handleCustomRecipeSubmit(e) {
+  function handleCustomRecipeSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const newRecipe = {
+    const newRecipe: Recipe = {
       id: 'custom-' + Date.now(),
       name: customRecipe.name,
       ingredients: customRecipe.ingredients.split('\n').map(line => {
@@ -341,7 +343,7 @@ const ChatbotPage = () => {
       difficulty: 'Custom',
       diet: customRecipe.diet ? customRecipe.diet.split(',').map(d => d.trim()) : [],
       image: '/images/food-categories/custom.jpg',
-      popularity: 0
+      servings: 1,
     };
     setRecipes(prev => [...prev, newRecipe]);
     setSelectedRecipeId(newRecipe.id);

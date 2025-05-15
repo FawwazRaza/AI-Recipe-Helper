@@ -16,4 +16,5 @@ export interface Recipe {
   cuisine?: string;
   mealType?: string;
   calories?: number;
+  diet?: string[];
 } 
